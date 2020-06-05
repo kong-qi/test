@@ -14,7 +14,7 @@ $auth = [
     */
 
     'defaults' => [
-        'guard' => 'user',
+        'guard' => 'web',
         'passwords' => 'users',
     ],
 
