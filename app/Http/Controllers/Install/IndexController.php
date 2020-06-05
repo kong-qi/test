@@ -182,6 +182,13 @@ LANG=cn
 KONGQI_SERVER=$kongqi_key
 DEBUGBAR_ENABLED=false
 
+# 是否关闭插件应用，1表示是开启，0表示关闭
+OPEN_PLUGIN=1
+
+# 开启后台验证码,ADMIN_OPEN_CAPTCHA=1 表示开启，0关闭
+ADMIN_OPEN_CAPTCHA=0
+ADMIN_CAPTCHA_TYPE=admin
+
 
 EOT;
         return $env;

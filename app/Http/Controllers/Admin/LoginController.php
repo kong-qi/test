@@ -31,6 +31,7 @@ class LoginController extends BaseController
         return $this->display();
 
     }
+
     public function username()
     {
         return 'account';
@@ -40,6 +41,7 @@ class LoginController extends BaseController
     {
         return Auth::guard('admin');
     }
+
     /**
      * 登录失败
      * @param Request $request
@@ -47,8 +49,9 @@ class LoginController extends BaseController
      */
     protected function sendFailedLoginResponse(Request $request)
     {
-        return ([ 'code' => 1, 'msg' => lang('账号或密码错误')]);
+        return (['code' => 1, 'msg' => lang('账号或密码错误')]);
     }
+
     protected function validatorForm($request)
     {
         $message_data = [
@@ -60,6 +63,10 @@ class LoginController extends BaseController
                 $this->username() => 'required|string',
                 'password' => 'required|string'
             ];
+        //开启验证码验证
+        if (env('ADMIN_OPEN_CAPTCHA', 1)) {
+            $check_data['captcha'] = 'required|captcha';
+        }
         $validator = Validator::make($request->all(), $check_data, $message_data);
         if ($validator->fails()) {
             if ($request->ajax() || $request->wantsJson()) {
@@ -68,6 +75,7 @@ class LoginController extends BaseController
         }
         return [];
     }
+
     public function login(Request $request)
     {
         $error = $this->validatorForm($request);
@@ -91,6 +99,7 @@ class LoginController extends BaseController
         $this->incrementLoginAttempts($request);
         return $this->sendFailedLoginResponse($request);
     }
+
     /**
      * 登录成功
      * @return \Illuminate\Http\JsonResponse
@@ -104,7 +113,7 @@ class LoginController extends BaseController
         $admin->login_numbers += 1;
         $admin->save();
         $url = route('admin.index');
-        return $this->returnSuccessApi('登录成功',$url);
+        return $this->returnSuccessApi('登录成功', $url);
     }
 
 
@@ -122,7 +131,7 @@ class LoginController extends BaseController
 
         return $request->wantsJson()
             ? new Response('', 204)
-            :redirect()->route('admin.login');
+            : redirect()->route('admin.login');
     }
 
 }

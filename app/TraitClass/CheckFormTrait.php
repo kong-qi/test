@@ -52,7 +52,10 @@ trait CheckFormTrait
         $error_arr = [];
         foreach ($error as $k => $v) {
 
-            $error_str .= $v . "*" . $this->setFormErrorSuffix();
+            $error_str .= $v . "*" ;
+            if((count($error)-1)!=$k){
+                $error_str.=$this->setFormErrorSuffix();
+            }
             $error_arr[] = $v;
 
         }

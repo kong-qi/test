@@ -8,7 +8,8 @@
     </script>
 @endsection
 @section('body')
-    <body class="bg-gradient-primary login-body" style="background: url('{{ ___('admin/images/bglogin.jpg') }}') center center">
+    <body class="bg-gradient-primary login-body"
+          style="background: url('{{ ___('admin/images/bglogin.jpg') }}') center center">
     @endsection
     @section('content')
         <div class="container">
@@ -38,16 +39,32 @@
                                                class="form-control form-control-user"
                                                id="exampleInputPassword" placeholder="{{ lang('请输入密码') }}">
                                     </div>
+                                    @if(env('ADMIN_OPEN_CAPTCHA',1))
+                                        <div class="form-group">
+                                            <div class="d-flex">
+                                                <input lay-verify="rq" type="text"
+                                                       style="border-radius:  10rem 0  0rem 10rem" value=""
+                                                       name="captcha" placeholder="{{ lang('验证码') }}"
+                                                       class="form-control form-control-user">
+                                                <img src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE')]) }}"
+                                                     data-src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE')]) }}"
+                                                     style="border:1px solid #d1d3e2;border-left:0;border-radius:  0rem 10rem  10rem 0"
+                                                     id="LAY-user-get-vercode">
+                                            </div>
 
+                                        </div>
+                                    @endif
                                     <div class="form-group">
 
                                         <div class="custom-control custom-checkbox small">
-                                            <input type="checkbox" value="1" name="remember" class="custom-control-input"
+                                            <input type="checkbox" value="1" name="remember"
+                                                   class="custom-control-input"
                                                    id="customCheck">
                                             <label class="custom-control-label"
                                                    for="customCheck">{{ lang('记住密码') }}</label>
                                         </div>
                                     </div>
+
 
                                     <button type="button" class="btn btn-primary btn-user btn-block" lay-submit
                                             lay-filter="login-submit">
@@ -86,7 +103,8 @@
                     request.post(postLoginUrl, obj.field, function (res) {
                         if (res.code != 200) {
                             layer.msg(res.msg, {icon: 5, shift: 6});
-
+                            //刷新验证码
+                            $("#LAY-user-get-vercode").click();
                         } else {
                             layer.msg(res.msg, {icon: 1, shift: 6});
                             location.href = res.data; //后台主页
@@ -99,6 +117,11 @@
                     if (code == 13) {
                         $("[lay-submit]").click();
                     }
+                });
+                //更换图形验证码
+                $("body").on('click', '#LAY-user-get-vercode', function () {
+                    var othis = $(this);
+                    this.src = othis.data('src') + '?t=' + new Date().getTime()
                 });
 
             })

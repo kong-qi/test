@@ -13,9 +13,3 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-//验证码
-Route::prefix('api/')->group(function ($route) {
-    $route->get('captcha/{type?}', 'Api\CaptchaController@index')->name('api.captcha');
-
-});

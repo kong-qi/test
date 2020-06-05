@@ -8,32 +8,35 @@ use Mews\Captcha\Facades\Captcha;
 class CaptchaController extends Controller
 {
     //
-    public function index($type=1){
+    public function index($type = 1)
+    {
 
 
-        switch ($type)
-        {
-            case '1':
-                return Captcha::create();
-                break;
-            case '2':
+        switch ($type) {
+
+            case 'min':
 
                 return Captcha::create('mini');
                 break;
-            case '3':
+            case 'math':
 
                 return Captcha::create('math');
                 break;
-            case '4':
+            case 'flat':
 
                 return Captcha::create('flat');
                 break;
-            case '5':
+            case 'inverse':
                 return Captcha::create('inverse');
                 break;
+            case 'admin':
+
+                return Captcha::create('admin');
+                break;
+            default:
+                return Captcha::create();
+                break;
         }
-
-
 
     }
 }

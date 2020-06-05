@@ -184,6 +184,10 @@ DEBUGBAR_ENABLED=0
 # 是否关闭插件应用，1表示是开启，0表示关闭
 OPEN_PLUGIN=1
 
+# 开启后台验证码,ADMIN_OPEN_CAPTCHA=1 表示开启，0关闭
+ADMIN_OPEN_CAPTCHA=0
+ADMIN_CAPTCHA_TYPE=admin
+
 ```
 如果你想要去掉插件模块，查看这篇介绍；
 
