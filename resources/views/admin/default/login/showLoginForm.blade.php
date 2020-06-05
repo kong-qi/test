@@ -46,8 +46,8 @@
                                                        style="border-radius:  10rem 0  0rem 10rem" value=""
                                                        name="captcha" placeholder="{{ lang('验证码') }}"
                                                        class="form-control form-control-user">
-                                                <img src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE')]) }}"
-                                                     data-src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE')]) }}"
+                                                <img src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE','admin')]) }}"
+                                                     data-src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE','admin')]) }}"
                                                      style="border:1px solid #d1d3e2;border-left:0;border-radius:  0rem 10rem  10rem 0"
                                                      id="LAY-user-get-vercode">
                                             </div>
