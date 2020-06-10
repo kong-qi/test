@@ -337,7 +337,7 @@ layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'],
         var data = {
             field: field,
             field_value: value,
-            ids: id.join(',')
+            ids: ids.join(',')
         };
         custormEvent.confirmPost(title, listConfig.edit_field_url, data, btn, 1, tableNameId);
 
