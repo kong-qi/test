@@ -17,7 +17,7 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
         closeThisTabs: function () {
             var that = this;
             if (!that.tabsPage.index) return;
-            var itemObj=$("#"+TABS_HEADER_UL+" li").eq(that.tabsPage.index);
+            var itemObj = $("#" + TABS_HEADER_UL + " li").eq(that.tabsPage.index);
             var key = md5.md5(itemObj.attr('lay-id'));
 
             if (key) {
@@ -25,7 +25,7 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
             }
 
 
-           $('#'+TABS_HEADER_UL+' li').eq(that.tabsPage.index).find('.layui-tab-close').trigger('click');
+            $('#' + TABS_HEADER_UL + ' li').eq(that.tabsPage.index).find('.layui-tab-close').trigger('click');
         }
         //记录最近一次点击的页面标签数据
 
@@ -34,18 +34,18 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
             var that = this;
             var TABS_REMOVE = 'admin-system-pagetabs-remove';
             if (type === 'all') {
-                $('#'+TABS_HEADER_UL+' li:gt(0)').remove();
+                $('#' + TABS_HEADER_UL + ' li:gt(0)').remove();
                 $(ADMIN_BODY).find('.' + TABS_BODY_ITEM + ':gt(0)').remove();
                 $("#admin-app-tab-header li").eq(0).trigger('click');
                 //清空缓存
                 cacheNav.clearAll();
             } else {
-                $('#'+TABS_HEADER_UL+' li').each(function (index, item) {
+                $('#' + TABS_HEADER_UL + ' li').each(function (index, item) {
                     if (index && index != that.tabsPage.index) {
                         $(item).addClass(TABS_REMOVE);
                         that.tabsBody(index).addClass(TABS_REMOVE);
                     }
-                    var itemObj = $("#"+TABS_HEADER_UL+" li").eq(that.tabsPage.index);
+                    var itemObj = $("#" + TABS_HEADER_UL + " li").eq(that.tabsPage.index);
                     var key = md5.md5(itemObj.attr('lay-id'));
                     var text = itemObj.find('span').text();
                     var href = itemObj.attr('lay-id');
@@ -197,6 +197,7 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
 
         }
     }
+    window.tabPage = tabPage;//全局生效
 
     //监听标签页删除
     element.on('tabDelete(' + FILTER_TAB_TBAS + ')', function (obj) {
@@ -221,7 +222,7 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
 
 
         //如果是空地址，去掉
-        if(!href){
+        if (!href) {
             return false;
         }
         //选中状态
@@ -246,15 +247,15 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
         tabPage.rightPage();
     });
     //关闭当前页面
-    $('[tabpage-event="closeThis"]').click(function(){
+    $('[tabpage-event="closeThis"]').click(function () {
         tabPage.closeThisTabs();
     })
     //关闭当前页面
-    $('[tabpage-event="closeOther"]').click(function(){
+    $('[tabpage-event="closeOther"]').click(function () {
         tabPage.closeOtherTabs('other');
     })
     //关闭全部
-    $('[tabpage-event="closeAllTabs"]').click(function(){
+    $('[tabpage-event="closeAllTabs"]').click(function () {
         tabPage.closeOtherTabs('all');
     })
     //标签页标题点击
@@ -294,7 +295,7 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
             for (var i in cache_navs) {
                 var item = cache_navs[i];
                 if (item && item.href) {
-                    item.title=item.title.replace(/ဆ/,'');
+                    item.title = item.title.replace(/ဆ/, '');
                     //插入顶部tabs
                     tabPage.openTabsPage(item.href, item.title)
                     cacheNav.setOn(item_key);
@@ -307,13 +308,13 @@ layui.define(['element', 'cacheNav', 'md5'], function (exports) {
 
 
             if (item && item.href) {
-                item.title=item.title.replace(/ဆ/,'');
+                item.title = item.title.replace(/ဆ/, '');
                 tabPage.openTabsPage(item.href, item.title)
             }
 
         }
     };
-   cacheOpenTabsPage();
+    cacheOpenTabsPage();
 
     exports('tabPage', tabPage);
 });

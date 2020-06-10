@@ -230,6 +230,16 @@ layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'],
                     url = $(this).data('url');
                     custormEvent.confirmPost(title, url, '', btn, 1, tableNameId, callFun);
                     break;
+                //数据列表增加跳转打开
+                case 'openTabUrl':
+                    url = $(this).data('url');
+                    var text = $(this).data('text');
+                    if (parent.tabPage) {
+                        parent.tabPage.openTabsPage(url, text);
+                    }
+
+
+                    break;
             }
             //附加监听表
             if (typeof(extendFun) == "function") {
