@@ -49,16 +49,7 @@ http://www.heibaiketang.com
 ## 安装  
 1.  拉取代码  
 
-github.com ( 有时候很慢)
-```git
-git clone https://github.com/kong-qi/kongqi_laravel_admin2.git  写上你的目录（将会安装此目录）
-```
-
-Gitee.com (国内的)  
-```
-git clone https://gitee.com/kong_qi/kongqi_laravel_admin2.git 写上你的目录（将会安装此目录）
-```
-![描述](https://www.heibaiketang.com/upload/images/20200522/14aebd375b8dc9c10c67aea22edeb3e655431.png)  
+https://www.heibaiketang.com/note/show/406.html
 
 2.  项目下执行安装 Laravel 依赖  
 
