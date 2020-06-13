@@ -419,6 +419,15 @@ trait ModelCurlTrait
     }
 
     /**
+     * 显示数据共享数据
+     * @param $show
+     */
+    public function showShareData($show)
+    {
+
+    }
+
+    /**
      * 是否关闭删除操作
      */
     public function closeDestroy()
