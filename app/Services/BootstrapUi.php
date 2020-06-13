@@ -165,8 +165,12 @@ class BootstrapUi implements Ui
 
         $itemHide = (isset($v['itemHide']) && $v['itemHide'] == 1) ? 'd-none' : '';
         $itemClass = $v['itemAddClass'] ?? '';//item附加class
+        $html='';
+        if($v['type']!='hidden'){
+            $html = '<div class="form-group  ' . $itemClass . ' ' . $itemHide . '">';
+        }
 
-        $html = '<div class="form-group  ' . $itemClass . ' ' . $itemHide . '">';
+
 
         switch ($v['type']) {
             case 'html':
@@ -215,7 +219,10 @@ class BootstrapUi implements Ui
                 $html .= str_replace("\r\n", "", $this->color($v));
                 break;
         }
-        $html .= '</div>';
+        if($v['type']!='hidden'){
+            $html .= '</div>';
+        }
+
         return $html;
     }
 
