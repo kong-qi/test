@@ -1,10 +1,11 @@
-layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'], function (exports) {
+layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent', 'tabPage'], function (exports) {
     var $ = layui.$;
     var table = layui.utable;
     var form = layui.uform;
     var req = layui.request;
     var layer = layui.layer;
     var custormEvent = layui.custormEvent;
+    var tabPage = layui.tabPage;
     var listTable = {
         render: listTableRender,//列表表格渲染
         search: listSearch,//列表表格搜索开启
@@ -230,13 +231,13 @@ layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'],
                     url = $(this).data('url');
                     custormEvent.confirmPost(title, url, '', btn, 1, tableNameId, callFun);
                     break;
-                //数据列表增加跳转打开
                 case 'openTabUrl':
-                    url = $(this).data('url');
+                    var url = $(this).data('url');
                     var text = $(this).data('text');
-                    if (parent.tabPage) {
+                    if(parent.tabPage){
                         parent.tabPage.openTabsPage(url, text);
                     }
+
 
 
                     break;
