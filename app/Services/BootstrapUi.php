@@ -81,15 +81,23 @@ class BootstrapUi implements Ui
                 if (!empty($item['data'])) {
                     $group_data[$k]['name'] = $item['group_name'];
                     foreach ($item['data'] as $k2 => $v) {
+                        //如果是自定义html
+
                         $group_data[$k]['data'][] = $this->createFormInputItem($v);
+
                     }
                 }
 
             } else {
-                $group_data[] = $this->createFormInputItem($item);;
+
+                $group_data[] = $this->createFormInputItem($item);
+
+
             }
 
         }
+
+
         //存在分组
         if ($is_group) {
 
@@ -118,14 +126,13 @@ class BootstrapUi implements Ui
             $html .= '</div></div>';
 
         } else {
-            $html = '<div class="'.($addSubmitBtn==0?'':'ml-2 mr-2').' form-area">' . implode("", $group_data) . '</div>';
+            $html = '<div class="' . ($addSubmitBtn == 0 ? '' : 'ml-2 mr-2') . ' form-area">' . implode("", $group_data) . '</div>';
             if ($addSubmitBtn) {
                 $html .= '<div class="form-group ' . ($showBtn == 1 ? '' : 'd-none') . '"><button class="btn  btn-primary" type="button" lay-submit lay-filter="LAY-form-submit" id="LAY-form-submit">' . lang('提交') . '</button></div>';
 
             }
 
         }
-
 
         return $html;
     }
@@ -138,13 +145,17 @@ class BootstrapUi implements Ui
      */
     public function createFormInputItem($v)
     {
+
+
         if (isset($v['remove']) && $v['remove'] == 1) {
             return false;
         }
 
+
+
         //如果单独设置了，则传递单的
         if ($this->show) {
-            if (!isset($v['value'])) {
+            if (!isset($v['value']) && $v['type']!='html') {
                 $v['value'] = $this->show[$v['field']] ?? '';
             }
 
@@ -158,6 +169,9 @@ class BootstrapUi implements Ui
         $html = '<div class="form-group  ' . $itemClass . ' ' . $itemHide . '">';
 
         switch ($v['type']) {
+            case 'html':
+                $html.=$v['html'];
+                break;
             case 'text':
             case 'email':
             case 'number':
