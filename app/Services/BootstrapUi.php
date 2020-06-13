@@ -1,14 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | KQAdmin [ 基于Laravel后台快速开发后台 ]
-// | 快速laravel后台管理系统，集成了，图片上传，多图上传，批量Excel导入，批量插入，修改，添加，搜索，权限管理RBAC,验证码，助你开发快人一步。
-// +----------------------------------------------------------------------
-// | Copyright (c) 2012~2019 www.haoxuekeji.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Laravel 原创视频教程，文档教程请关注 www.heibaiketang.com
-// +----------------------------------------------------------------------
-// | Author: kongqi <531833998@qq.com>`
-// +----------------------------------------------------------------------
 
 namespace App\Services;
 
@@ -76,7 +66,7 @@ class BootstrapUi implements Ui
      * @param string $show
      * @return string
      */
-    public function createFormInput($data, $show = '', $showBtn = 0)
+    public function createFormInput($data, $show = '', $showBtn = 0, $addSubmitBtn = 1)
     {
 
         $this->show = $show;
@@ -103,7 +93,8 @@ class BootstrapUi implements Ui
         //存在分组
         if ($is_group) {
 
-            $html = ' <div class="card "><div class="card-header">';
+            $html = ' <div class="card ">
+                      <div class="card-header">';
             $html .= ' <div class="nav nav-tabs  card-header-tabs"  role="tablist">';
             $content = '';
             foreach ($group_data as $k => $v) {
@@ -111,22 +102,30 @@ class BootstrapUi implements Ui
                 $html .= '<a class="nav-item nav-link ' . ($k == 0 ? ' active' : '') . '" id="nav-home-tab" data-toggle="tab" href="#input-nav-' . $k . '">' . lang($v['name']) . '</a>';
             }
 
-            $html .= '</div> </div>';
+            $html .= '</div></div>';
 
             $html .= '<div class="card-body"><div class="tab-content" id="nav-tabContent">';
 
             $html .= $content;
 
             $html .= '</div>';
-            $html .= '<div class="form-group mt-4 ' . ($showBtn == 1 ? '' : 'd-none') . '"><button class="btn  btn-primary" type="button" lay-submit lay-filter="LAY-form-submit" id="LAY-form-submit">' . lang('提交') . '</button></div>';
+            if ($addSubmitBtn) {
+                $html .= '<div class="form-group mt-4 ' . ($showBtn == 1 ? '' : 'd-none') . '">
+                    <button class="btn  btn-primary" type="button" lay-submit lay-filter="LAY-form-submit" id="LAY-form-submit">' . lang('提交') . '</button>
+                    </div>';
+            }
 
             $html .= '</div></div>';
 
         } else {
-            $html = implode("", $group_data);
-            $html .= '<div class="form-group ' . ($showBtn == 1 ? '' : 'd-none') . '"><button class="btn  btn-primary" type="button" lay-submit lay-filter="LAY-form-submit" id="LAY-form-submit">' . lang('提交') . '</button></div>';
+            $html = '<div class="'.($addSubmitBtn==0?'':'ml-2 mr-2').' form-area">' . implode("", $group_data) . '</div>';
+            if ($addSubmitBtn) {
+                $html .= '<div class="form-group ' . ($showBtn == 1 ? '' : 'd-none') . '"><button class="btn  btn-primary" type="button" lay-submit lay-filter="LAY-form-submit" id="LAY-form-submit">' . lang('提交') . '</button></div>';
+
+            }
 
         }
+
 
         return $html;
     }
@@ -153,7 +152,10 @@ class BootstrapUi implements Ui
             $v['value'] = $v['value'] ?? ($v['default'] ?? '');
         }
 
-        $html = '<div class="form-group">';
+        $itemHide = (isset($v['itemHide']) && $v['itemHide'] == 1) ? 'd-none' : '';
+        $itemClass = $v['itemAddClass'] ?? '';//item附加class
+
+        $html = '<div class="form-group  ' . $itemClass . ' ' . $itemHide . '">';
 
         switch ($v['type']) {
             case 'text':
@@ -249,17 +251,18 @@ class BootstrapUi implements Ui
 
     public function label($item, $labelType = '')
     {
-
+        $html = '';
         if ($labelType == 'search') {
             $html = '<div class="input-group-prepend"><label class="input-group-text" for="' . $item['field'] . '">' . lang($item['name']) . '</label></div>';
         } else {
-            $html = '<label for="' . $item['field'] . '">' . lang($item['name']) . '</label>';
             if (isset($item['must']) && $item['must'] == 1) {
-                $html .= '<span class="ml-1 text-danger">*</span>';
+                $html = '<span class="mr-1 text-danger input-must">*</span>';
             }
+            $html .= '<label class="input-label" for="' . $item['field'] . '">' . lang($item['name']) . '</label>';
+
             if (isset($item['mark']) && !empty($item['mark'])) {
                 $item['mark'] = lang($item['mark']);
-                $html .= '<span class="text-secondary pl-2">(' . $item['mark'] . ')<span>';
+                $html .= '<span class="text-secondary pl-2 input-mark">(' . $item['mark'] . ')</span>';
             }
         }
 
@@ -515,9 +518,12 @@ class BootstrapUi implements Ui
         name="' . $item['field'] . '"  
         id="input-' . $item['id'] . '" data-tips="' . lang($item['tips'] ?: $item['name']) . '" lay-verify="' . ($item['verify'] ?: '') . '"  
         lay-filter="' . ($item['filter'] ?? '') . '">';
+        $item['value'] = (string)$item['value'];
         if (!empty($item['data'])) {
             foreach ($item['data'] as $k => $v) {
-                $html .= '<option value="' . $v['id'] . '" ' . ($v['id'] == $item['value'] ? 'selected' : '') . '>' . lang($v['name']) . '</option>';
+                $v['id'] = (string)$v['id'];
+                $html .= '<option  data-type="' . (gettype($item['value'])) . '"  data-value="' . $item['value'] . '" value="' . $v['id'] . '" ' . ($v['id'] == $item['value'] ? 'selected' : '') . '>' . lang($v['name']) . '</option>';
+
             }
         }
         $html .= '</select>';
@@ -554,11 +560,12 @@ class BootstrapUi implements Ui
             $html .= $this->label($item);
         }
 
-        $html .= '<div class="radio-tips form-control " id="' . $item['id'] . '" data-tips="' . lang($item['tips']) . '">';
+        $html .= '<div ' . ($item['attr'] ?? '') . ' class="radio-tips form-control radio-area " id="' . $item['id'] . '" data-tips="' . lang($item['tips']) . '">';
         if (!empty($item['data'])) {
             foreach ($item['data'] as $k => $v) {
+
                 $html .= '<div class="custom-control custom-radio ' . ($inline ? 'custom-control-inline' : '') . '">';
-                $html .= '<input  ' . ($v['id'] == $item['value'] ? 'checked' : '') . '  value="' . $v['id'] . '" type="radio" id="' . ($item['field']) . $v['id'] . '" 
+                $html .= '<input data-value="' . $item['value'] . '"  ' . ($v['id'] == $item['value'] ? 'checked' : '') . '  value="' . $v['id'] . '" type="radio" id="' . ($item['field']) . $v['id'] . '" 
                  lay-verify="' . ($item['verify'] ?? '') . '" 
                  name="' . $item['field'] . '" class="custom-control-input">
                   <label class="custom-control-label" for="' . ($item['field']) . $v['id'] . '">' . lang($v['name']) . '</label>
@@ -589,7 +596,7 @@ class BootstrapUi implements Ui
         if ($hasLabel) {
             $html .= $this->label($item);
         }
-        $html .= '<div><div class="radio-tips form-control "  id="' . $item['id'] . '" data-tips="' . lang($item['tips']) . '">';
+        $html .= '<div><div ' . ($item['attr'] ?? '') . ' class="radio-tips form-control checkbox-area h-auto"  id="' . $item['id'] . '" data-tips="' . lang($item['tips']) . '">';
         if (!empty($item['data'])) {
             foreach ($item['data'] as $k => $v) {
 
@@ -599,7 +606,7 @@ class BootstrapUi implements Ui
                  value="' . $v['id'] . '" type="checkbox" id="' . ($item['field']) . $v['id'] . '" 
                  lay-verify="' . ($item['verify'] ?? '') . '" 
                  placeholder="' . lang($item['tips']) . '" 
-                 name="' . $item['field'] . '[]" class="custom-control-input">
+                 name="' . $item['field'] . '[]" class="custom-control-input" />
                   <label class="custom-control-label" for="' . ($item['field']) . $v['id'] . '">' . lang($v['name']) . '</label>
                 </div>';
             }
