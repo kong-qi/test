@@ -19,7 +19,7 @@ class CreateCategoriesTable extends Migration
             $table->string('ename', 120)->index('ename')->nullable()->comment('标识符');
             $table->string('name')->comment('名称');
             $table->string('path_level')->nullable()->comment('层级顺序');
-            $table->string('group_type', 120)->index('group_type')->comment('类型');
+            $table->string('group_type', 120)->nullable()->index('group_type')->comment('类型');
             $table->string('thumb')->nullable()->comment('图片');
             $table->string('icon')->nullable()->comment('图标');
             $table->string('banner')->nullable()->comment('banner图片');

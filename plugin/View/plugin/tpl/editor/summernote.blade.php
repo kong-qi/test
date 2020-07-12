@@ -5,7 +5,7 @@
 @endif
 <script src="{{ ___('editor/summernote/plugin/uploader/upload-ext.js') }}"></script>
 <script>
-    function editor(obj, default_config) {
+    function summernote(obj, default_config) {
         var config = {
             minHeight: 150,
             tabsize: 4,

@@ -36,7 +36,7 @@
     }
 </style>
 <script>
-    function editor(Obj, config) {
+    function simple(Obj, config) {
         config = config || {};
         var cacheName = config.cacheName || 'MyUniqueID';
         var simplemde = new SimpleMDE({
