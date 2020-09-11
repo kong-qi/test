@@ -9,8 +9,12 @@ use App\Services\UiService;
 class AdminRoleController extends BaseCurlController
 {
     public $pageName = '权限角色';
-    //那些页面不共享，需要单独设置的方法
-    public $denyCommonBladePathActionName = ['create', 'edit'];
+
+    public $createEditfootAddJavascript='footJs';
+
+
+
+
 
     /**
      * 设置模型
@@ -24,6 +28,7 @@ class AdminRoleController extends BaseCurlController
     //首页设置列表显示的信息
     public function indexCols()
     {
+
         $cols = [
             [
                 'type' => 'checkbox'
@@ -110,6 +115,8 @@ class AdminRoleController extends BaseCurlController
     {
         $permissions = Permission::where('guard_name', $this->guardName)->get()->toArray();
         $permissions = $this->permissions($permissions, $show);
+
+
         return ['permissions' => $permissions];
 
     }
@@ -141,7 +148,17 @@ class AdminRoleController extends BaseCurlController
                 'name' => '描述',
                 'mark' => '可为空',
 
+            ],
+            [
+                'field' => 'blade',
+                'type' => 'blade',
+                'blade_name' => 'adminRole.permission',
+                'mark' => '',
+                'name'=>'请分配权限',
+                'must'=>1
+
             ]
+
 
         ];
         //赋值到ui数组里面必须是`form`的key值

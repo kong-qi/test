@@ -1,5 +1,9 @@
-<div class="form-group">
-    <label>{{ lang('权限分配') }}</label>
+<style>
+    .ui-form input[type="checkbox"]{
+        display: none !important;
+    }
+</style>
+
     <div class="form-control h-auto">
         @forelse($permissions as $first)
 
@@ -37,5 +41,5 @@
 
         @endforelse
     </div>
-</div>
+
 

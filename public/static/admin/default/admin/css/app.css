@@ -560,4 +560,21 @@ hr {
   height: 0.9em;
   vertical-align: middle;
 }
+.ew-xmselect-tree xm-select .xm-body .xm-option .xm-option-icon {
+  position: absolute;
+  left: 30px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  border: none!important;
+  z-index: 1;
+}
+.ew-xmselect-tree xm-select .xm-body .xm-option .xm-option-icon:before {
+  content: "";
+}
+xm-select > .xm-body .xm-option {
+  background-color: transparent!important;
+}
 /*# sourceMappingURL=app.css.map */

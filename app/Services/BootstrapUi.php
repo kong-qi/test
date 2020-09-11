@@ -6,29 +6,7 @@ class BootstrapUi implements Ui
 {
     public $show;
 
-    /**
-     * 单个生成表单模板数据
-     * @param $filed
-     * @param $name
-     * @param string $show
-     * @param string $type
-     * @param array $config
-     * @return string
-     */
-    public function createOneFormInput($filed, $name, $show = '', $type = 'text', $config = [])
-    {
-        $data = [
-            'field' => $filed,
-            'type' => $type,
-            'name' => $name,
-            'on' => 0,
-        ];
-        $data = $data + $config;
-        $data = [
-            $data
-        ];
-        return $this->createFormInput($data, $show);
-    }
+
 
     /**
      * 创建按钮
@@ -36,28 +14,26 @@ class BootstrapUi implements Ui
      */
     public function createBtn($data)
     {
-        $html_data = [];
-        foreach ($data as $k => $v) {
+
+        foreach ($data as $k => &$v) {
             $v['class'] = $v['class'] ?? 'btn-primary';
             $v['id'] = $v['id'] ?? '';
             $v['data'] = $v['data'] ?? [];
+            $v['name']=lang($v['name']);
+            if(!empty($v['data'])){
+                $html=[];
+                foreach ($v['data'] as $k2=>$v2){
+                    $html[]=$k2.'='.$v2.' ';
+                }
+                $v['data']=$html;
+            }
 
-            $html_data[] = $this->btn(($v['name']), $v['class'], $v['data'], $v['id']);
+
         }
-        return implode("", $html_data);
+        //dd($data);
+        return $data;
     }
 
-
-    public function btn($name, $class, $data = [], $id = '')
-    {
-
-        $html = '';
-        foreach ($data as $k => $v) {
-            $html .= ' ' . $k . '=' . $v;
-        }
-
-        return '<button ' . $html . ' class="kongqi-handel btn ' . $class . '" id="' . $id . '">' . lang($name) . '</button>';
-    }
 
 
     /**
@@ -82,7 +58,6 @@ class BootstrapUi implements Ui
                     $group_data[$k]['name'] = $item['group_name'];
                     foreach ($item['data'] as $k2 => $v) {
                         //如果是自定义html
-
                         $group_data[$k]['data'][] = $this->createFormInputItem($v);
 
                     }
@@ -92,49 +67,15 @@ class BootstrapUi implements Ui
 
                 $group_data[] = $this->createFormInputItem($item);
 
-
             }
 
         }
 
 
-        //存在分组
-        if ($is_group) {
+        return ['is_group' => $is_group, 'data' => $group_data];
 
-            $html = ' <div class="card ">
-                      <div class="card-header">';
-            $html .= ' <div class="nav nav-tabs  card-header-tabs"  role="tablist">';
-            $content = '';
-            foreach ($group_data as $k => $v) {
-                $content .= '<div class="tab-pane fade ' . ($k == 0 ? 'show active' : '') . '" id="input-nav-' . $k . '" >' . (implode("", $v['data'])) . '</div>';
-                $html .= '<a class="nav-item nav-link ' . ($k == 0 ? ' active' : '') . '" id="nav-home-tab" data-toggle="tab" href="#input-nav-' . $k . '">' . lang($v['name']) . '</a>';
-            }
 
-            $html .= '</div></div>';
 
-            $html .= '<div class="card-body"><div class="tab-content" id="nav-tabContent">';
-
-            $html .= $content;
-
-            $html .= '</div>';
-            if ($addSubmitBtn) {
-                $html .= '<div class="form-group mt-4 ' . ($showBtn == 1 ? '' : 'd-none') . '">
-                    <button class="btn  btn-primary" type="button" lay-submit lay-filter="LAY-form-submit" id="LAY-form-submit">' . lang('提交') . '</button>
-                    </div>';
-            }
-
-            $html .= '</div></div>';
-
-        } else {
-            $html = '<div class="' . ($addSubmitBtn == 0 ? '' : 'ml-2 mr-2') . ' form-area">' . implode("", $group_data) . '</div>';
-            if ($addSubmitBtn) {
-                $html .= '<div class="form-group ' . ($showBtn == 1 ? '' : 'd-none') . '"><button class="btn  btn-primary" type="button" lay-submit lay-filter="LAY-form-submit" id="LAY-form-submit">' . lang('提交') . '</button></div>';
-
-            }
-
-        }
-
-        return $html;
     }
 
     /**
@@ -145,12 +86,14 @@ class BootstrapUi implements Ui
      */
     public function createFormInputItem($v)
     {
+        $v['name'] = lang($v['name']??'');
+        if($v['type']!='custorm'){
 
-
-        if (isset($v['remove']) && $v['remove'] == 1) {
-            return false;
+            $v['id'] = $v['id'] ?? $v['field'];
+        }else{
+            $v['id']='';
         }
-
+        $v['addClass']=$v['addClass']??'';
 
 
         //如果单独设置了，则传递单的
@@ -163,67 +106,75 @@ class BootstrapUi implements Ui
             $v['value'] = $v['value'] ?? ($v['default'] ?? '');
         }
 
-        $itemHide = (isset($v['itemHide']) && $v['itemHide'] == 1) ? 'd-none' : '';
-        $itemClass = $v['itemAddClass'] ?? '';//item附加class
-        $html='';
-        if($v['type']!='hidden'){
-            $html = '<div class="form-group  ' . $itemClass . ' ' . $itemHide . '">';
-        }
+        $v['tips'] = $v['tips'] ?? '';
+        //附加class
+        $v['addClass'] = $v['addClass'] ?? '';
 
+        //附加属性
+        $v['attr'] = $v['attr'] ?? '';
 
+        $v['tips'] = $v['tips'] ? lang($v['tips']) : $v['name'];
 
         switch ($v['type']) {
-            case 'html':
-                $html.=$v['html'];
-                break;
-            case 'text':
-            case 'email':
-            case 'number':
-                $html .= str_replace("\r\n", "", $this->input($v));
-                break;
+
             case 'date':
             case 'datetime':
                 $v['type'] = 'text';
                 $v['attr'] = $v['attr'] ?? '';
                 $v['attr'] = $v['attr'] . ' data-lang="' . env('lang') . '" ';
-                $html .= str_replace("\r\n", "", $this->input($v));
-                break;
-            case 'hidden':
-                $html .= str_replace("\r\n", "", $this->input($v, '0'));
-                break;
-            case 'select':
-                $html .= str_replace("\r\n", "", $this->select($v));
-                break;
-            case 'textarea':
-                $html .= str_replace("\r\n", "", $this->textarea($v));
-                break;
-            case 'radio':
-                $html .= str_replace("\r\n", "", $this->radio($v));
-                break;
-            case 'checkbox':
-                $html .= str_replace("\r\n", "", $this->checkbox($v));
-                break;
-            case 'editor':
-                $html .= str_replace("\r\n", "", $this->textarea($v));
                 break;
             case 'img':
-                $html .= str_replace("\r\n", "", $this->thumb($v));
-                break;
             case 'imgMore':
-                $html .= str_replace("\r\n", "", $this->thumbMore($v));
+                //上传路径接口
+                $v['upload_url'] = $v['upload_url'] ?? '';//单独设置上传接口地址
+                $v['file_type'] = $v['file_type'] ?? '';//上传文件类型
+                $v['oss_type'] = $v['oss_type'] ?? 'local';//上传文件类型
+                $v['accept_type'] = $v['accept_type'] ?? '';//前端接受的文件上传类型，默认是images
+                $v['group_id'] = $v['group_id'] ?? '';//分组ID
+                $v['place_url'] = $v['place_url'] ?? '';//单独设置文件空间地址
+                $v['value_name'] = $v['value_name'] ?? 'path';
+
+                $up_attr = 'data-value_name=' . $v['value_name'];
+                if ($v['upload_url']) {
+                    $up_attr .= ' data-upload_url=' . $v['upload_url'] . ' ';
+                }
+                if ($v['file_type']) {
+                    $up_attr .= ' data-file_type=' . $v['file_type'] . ' ';
+                }
+                if ($v['accept_type']) {
+                    $up_attr .= ' data-accept_type=' . $v['accept_type'] . ' ';
+                }
+                if ($v['oss_type']) {
+                    $up_attr .= ' data-oss_type=' . $v['oss_type'] . ' ';
+                }
+
+                $place_attr = 'data-value_name=' . $v['value_name'];
+                if ($v['place_url']) {
+                    $place_attr .= ' data-place_url=' . $v['place_url'] . ' ';
+                }
+                if ($v['file_type']) {
+                    $place_attr .= ' data-file_type=' . $v['file_type'] . ' ';
+                }
+                if ($v['group_id']) {
+                    $place_attr .= ' data-group_id=' . $v['group_id'] . ' ';
+                }
+                if ($v['oss_type']) {
+                    $place_attr .= ' data-oss_type=' . $v['oss_type'] . ' ';
+                }
+                $v['place_attr'] = $place_attr;
+                $v['up_attr'] =  $up_attr;
+                $v['addClass'] = $v['addClass'] . ' upload-area-input';
+
+                if ($this->show && $v['type']=='imgMore') {
+                    $v['value'] = $this->show[$v['field']] ?? '';
+                    $v['data'] = $v['value'] ? json_decode($v['value'], 1) : [];
+                }
                 break;
-            case 'icon':
-                $html .= str_replace("\r\n", "", $this->icon($v));
-                break;
-            case 'color':
-                $html .= str_replace("\r\n", "", $this->color($v));
-                break;
-        }
-        if($v['type']!='hidden'){
-            $html .= '</div>';
+
         }
 
-        return $html;
+        return $v;
+
     }
 
 
@@ -234,417 +185,21 @@ class BootstrapUi implements Ui
      */
     public function createFormSearchInput($data)
     {
-        foreach ($data as $k => $v) {
+        foreach ($data as $k => &$v) {
             if (isset($v['remove']) && $v['remove'] == 1) {
                 continue;
             }
-            $html = '<div class="mr-2"><div class="input-group mb-2">';
-            $html .= $this->label($v, 'search');
+
             $v['default'] = $v['default'] ?? '';
             $v['value'] = $v['value'] ?? $v['default'];
+            $v['addClass']= $v['addClass']??'';
 
-            switch ($v['type']) {
-                case 'text':
-                case 'date':
-                case 'email':
-                case 'number':
-                    $html .= str_replace("\r\n", "", $this->input($v, 0));
-                    break;
-                case 'select':
-                    $html .= str_replace("\r\n", "", $this->select($v, 0));
-                    break;
-                case 'textarea':
-                    $html .= str_replace("\r\n", "", $this->textarea($v, 0));
-                    break;
-                case 'radio':
-                    $html .= str_replace("\r\n", "", $this->radio($v, 0));
-                    break;
-                case 'checkbox':
-                    $html .= str_replace("\r\n", "", $this->checkbox($v, 0));
-                    break;
-            }
-            $html .= '</div></div>';
-            $html_data[] = $html;
         }
-        return implode("", $html_data);
+
+        return $data;
     }
 
 
-    public function label($item, $labelType = '')
-    {
-        $html = '';
-        if ($labelType == 'search') {
-            $html = '<div class="input-group-prepend"><label class="input-group-text" for="' . $item['field'] . '">' . lang($item['name']) . '</label></div>';
-        } else {
-            if (isset($item['must']) && $item['must'] == 1) {
-                $html = '<span class="mr-1 text-danger input-must">*</span>';
-            }
-            $html .= '<label class="input-label" for="' . $item['field'] . '">' . lang($item['name']) . '</label>';
-
-            if (isset($item['mark']) && !empty($item['mark'])) {
-                $item['mark'] = lang($item['mark']);
-                $html .= '<span class="text-secondary pl-2 input-mark">(' . $item['mark'] . ')</span>';
-            }
-        }
-
-        return $html;
-    }
-
-    public function input($item, $hasLabel = 1, $class = "form-control")
-    {
-
-
-        $item['id'] = $item['id'] ?? $item['field'];
-        $item['tips'] = $item['tips'] ?? '';
-
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        $html .= '<input ' . ($item['attr'] ?? '') . ' 
-        ui-event="' . ($item['event'] ?? '') . '" type="' . $item['type'] . '"  
-        name="' . $item['field'] . '" 
-        value="' . ($item['value'] ?? '') . '" 
-        lay-verify="' . ($item['verify'] ?? '') . '" 
-        class="' . $class . ' ' . ($item['addClass'] ?? '') . '" 
-        id="input-' . ($item['id']) . '" 
-        placeholder="' . lang($item['tips'] ?: $item['name']) . '">';
-        return $html;
-    }
-
-    public function thumb($item, $hasLabel = 1, $class = "form-control")
-    {
-
-        $item['id'] = $item['id'] ?? '';
-        $item['tips'] = $item['tips'] ?? '';
-        $item['value_name'] = $item['value_name'] ?? 'path';
-
-        $item['upload_url'] = $item['upload_url'] ?? '';//单独设置上传接口地址
-        $item['file_type'] = $item['file_type'] ?? '';//上传文件类型
-        $item['accept_type'] = $item['accept_type'] ?? '';//前端接受的文件上传类型，默认是images
-        $item['group_id'] = $item['group_id'] ?? '';//分组ID
-        $item['place_url'] = $item['place_url'] ?? '';//单独设置文件空间地址
-        $up_attr = 'data-value_name=' . $item['value_name'];
-        if ($item['upload_url']) {
-            $up_attr .= ' data-upload_url=' . $item['upload_url'] . ' ';
-        }
-        if ($item['file_type']) {
-            $up_attr .= ' data-file_type=' . $item['file_type'] . ' ';
-        }
-        if ($item['accept_type']) {
-            $up_attr .= ' data-accept_type=' . $item['accept_type'] . ' ';
-        }
-
-        $place_attr = 'data-value_name=' . $item['value_name'];
-        if ($item['place_url']) {
-            $place_attr .= ' data-place_url=' . $item['place_url'] . ' ';
-        }
-        if ($item['file_type']) {
-            $place_attr .= ' data-file_type=' . $item['file_type'] . ' ';
-        }
-        if ($item['group_id']) {
-            $place_attr .= ' data-group_id=' . $item['group_id'] . ' ';
-        }
-
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        $item['type'] = 'hidden';
-        $item['addClass'] = 'upload-area-input';
-        $html .= ' <div class="upload-area " id="' . (md5($item['field'])) . '">
-                    ' . $this->input($item, 0) . '
-                    <img ui-event="showImg" 
-                    class="img-fluid iupload-area-img-show mb-2 ' . ($item['value'] ?: 'd-none') . '" 
-                    src="' . $item['value'] . '"
-                    style="max-width: 11.5rem" src="" alt="">
-                 
-                    <div class="d-flex">
-                        <a href="javascript:void(0)"  ' . $up_attr . ' 
-                        data-event="upload" data-more="0" 
-                       id="upload' . (md5($item['field'])) . '" 
-                        data-target="#' . (md5($item['field'])) . '" 
-                        class="btn btn-primary btn-sm  mr-2"> 
-                        <i class="fas fa-upload fa-fw"></i> ' . lang('点击上传') . '</a>
-                        <a href="javascript:void(0)" ' . $place_attr . ' class="btn btn-secondary btn-sm" data-more="0"  
-                        data-event="uploadPlace" data-target="#' . (md5($item['field'])) . '">
-                         <i class="fas fa fa-cloud"></i>
-                          ' . lang('文件空间') . '</a>
-                    </div>
-                </div>';
-        return $html;
-    }
-
-    public function icon($item, $hasLabel = 1, $class = "form-control")
-    {
-        $item['id'] = $item['id'] ?? '';
-        $item['tips'] = $item['tips'] ?? '';
-
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        $item['type'] = 'text';
-        $item['addClass'] = 'upload-area-input';
-        $html .= ' <div class="open-icon input-group" id="' . (md5($item['field'])) . '">
-                    ' . $this->input($item, 0) . '
-                    <div class="input-group-prepend">
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm" data-more="0"  
-                        data-event="iconPlace" data-target="#' . (md5($item['field'])) . '">
-                         <i class="fas fa fa-cloud"></i>
-                          ' . lang('选择图标') . '</a>
-                   </div>
-                    <div class="iupload-area-img-show mb-2 ml-2 text-secondary f16 w-100 ' . ($item['value'] ? '' : 'd-none') . '"><i class="' . $item['value'] . '"></i></div>
-                </div>';
-        return $html;
-    }
-
-    public function color($item, $hasLabel = 1, $class = "form-control")
-    {
-        $item['id'] = $item['id'] ?? $item['field'];
-        $item['tips'] = $item['tips'] ?? '';
-
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        $item['event'] = 'color';
-        $item['type'] = 'text';
-        $item['attr'] = $item['attr'] ?? '';
-        $item['attr'] = $item['attr'] . ' data-obj="color-input-' . $item['id'] . '"';
-        $html .= ' <div class="open-icon input-group" id="' . (md5($item['field'])) . '">
-                    ' . $this->input($item, 0) . '
-                    <div class="input-group-prepend">
-                      <div class="color-warp" id="color-input-' . $item['id'] . '"></div>
-                   </div>
-                </div>';
-        return $html;
-    }
-
-    public function thumbMore($item, $hasLabel = 1, $class = "form-control")
-    {
-        $item['value_name'] = $item['value_name'] ?? 'path';
-        $item['id'] = $item['id'] ?? '';
-        $item['tips'] = $item['tips'] ?? '';
-        if ($this->show) {
-            $item['value'] = $this->show[$item['field']] ?? '';
-            $item['data'] = $item['value'] ? json_decode($item['value'], 1) : [];
-        }
-        $item['value'] = $item['value'] ?? '';
-
-        $item['data'] = $item['data'] ?? [];
-        $item['oss_type'] = $item['oss_type'] ?? 'local';//上传文件类型
-
-        $item['upload_url'] = $item['upload_url'] ?? '';//单独设置上传接口地址
-        $item['file_type'] = $item['file_type'] ?? '';//上传文件类型
-        $item['accept_type'] = $item['accept_type'] ?? '';//前端接受的文件上传类型，默认是images
-        $item['group_id'] = $item['group_id'] ?? '';//分组ID
-        $item['place_url'] = $item['place_url'] ?? '';//单独设置文件空间地址
-        $up_attr = 'data-value_name=' . $item['value_name'];
-        if ($item['upload_url']) {
-            $up_attr .= ' data-upload_url=' . $item['upload_url'] . ' ';
-        }
-        if ($item['file_type']) {
-            $up_attr .= ' data-file_type=' . $item['file_type'] . ' ';
-        }
-        if ($item['accept_type']) {
-            $up_attr .= ' data-accept_type=' . $item['accept_type'] . ' ';
-        }
-        if ($item['group_id']) {
-            $up_attr .= ' data-group_id=' . $item['group_id'] . ' ';
-        }
-        if ($item['oss_type']) {
-            $up_attr .= ' data-oss_type=' . $item['oss_type'] . ' ';
-        }
-
-
-        $place_attr = 'data-value_name=' . $item['value_name'];;
-        if ($item['place_url']) {
-            $place_attr .= ' data-place_url=' . $item['place_url'] . ' ';
-        }
-        if ($item['file_type']) {
-            $place_attr .= ' data-file_type=' . $item['file_type'] . ' ';
-        }
-        if ($item['group_id']) {
-            $place_attr .= ' data-group_id=' . $item['group_id'] . ' ';
-        }
-        if ($item['oss_type']) {
-            $place_attr .= ' data-oss_type=' . $item['oss_type'] . ' ';
-        }
-
-
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        $item['type'] = 'hidden';
-        $item['addClass'] = 'upload-area-input';
-        $html .= ' <div class="upload-area " style="">';
-
-        $html .= '<div class=" upload-area-more bg-white pr-2 pt-2 pl-2 mb-2 border rounded ' . (empty($item['data']) ? 'd-none' : '') . '" 
-        id="' . (md5($item['field'])) . '">';
-        $html .= $this->input($item, 0);
-        $html .= '<div class="row">';
-        if (!empty($item['data'])) {
-            foreach ($item['data'] as $k => $v) {
-                $v['type'] = $v['type'] ?? '';
-                $v['origin_path'] = $v['origin_path'] ?? '';
-                $html .= '<div class="col-auto mb-2 upload-area-more-item"
-                            data-tmp_name="' . ($v['tmp_name'] ?? '') . '"  data-ext="' . ($v['ext'] ?? '') . '"  data-oss_type="' . ($v['oss_type'] ?? '') . '"   
-                            data-path="' . $v['path'] . '" data-view_src="' . ($v['view_src'] ?? '') . '" data-view data-origin_path="' . $v['origin_path'] . '" >
-                            <div class="h6rem"><img class="img-fluid img-thumbnail maxH6rem" src="' . ($v['view_src'] ?? '') . '"  alt=""></div>
-                            <div class="handle d-flex justify-content-center">
-                                <button type="button" class="btn btn-sm js_left_pic" data-tips="tooltip" title="' . lang('左移') . '" >
-                                <i class="fas fa fa-chevron-left"></i> </button>
-                                <button type="button" class="btn btn-sm js_right_pic" data-tips="tooltip" title="' . lang('右移') . '"> 
-                                <i class="fas fa fa-chevron-right"></i> </button>
-                                 <button type="button" class="btn btn-sm js_remove_pic" data-tips="tooltip" title="' . lang('移除') . '" >
-                                <i class="fas fa fa-trash"></i> </button>
-                            </div>
-                        </div>';
-            }
-        }
-
-        $html .= '</div></div><div class="d-flex">
-                        <a href="javascript:void(0)"  
-                         id="upload' . (md5($item['field'])) . '"  
-                        class="btn btn-primary btn-sm  mr-2"  ' . $up_attr . ' 
-                        data-more="1"  data-event="upload" data-target="#' . (md5($item['field'])) . '">
-                         <i class="fas fa-upload fa-fw"></i> ' . lang('点击上传') . '</a>
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm" 
-                        data-more="1"  ' . $place_attr . ' data-event="uploadPlace"
-                         id="upload' . (md5($item['field'])) . '" 
-                        data-target="#' . (md5($item['field'])) . '">
-                         <i class="fas fa fa-cloud"></i>
-                            ' . lang('文件空间') . '</a>
-                    </div>
-                </div>';
-        return $html;
-    }
-
-    public function select($item, $hasLabel = 1, $class = "form-control")
-    {
-        //如果单独设置了，则传递单的
-        $item['on'] = $item['on'] ?? '';
-        $item['verify'] = $item['verify'] ?? '';
-        $item['id'] = $item['id'] ?? $item['field'];
-        $item['tips'] = $item['tips'] ?? '';
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        if (isset($item['is_layui'])) {
-
-            $item['is_layui'] = $item['attr']['is_layui'];
-        } else {
-            $item['is_layui'] = 0;
-        }
-        $ignore = 'lay-ignore ';
-        if ($item['is_layui'] == 1) {
-            $ignore = 'lay-search';
-        }
-
-        $html .= '<select  ' . $ignore . ' ' . ($item['attr'] ?? '') . ' class="' . $class . ' ' . ($item['addClass'] ?? '') . '"  
-        name="' . $item['field'] . '"  
-        id="input-' . $item['id'] . '" data-tips="' . lang($item['tips'] ?: $item['name']) . '" lay-verify="' . ($item['verify'] ?: '') . '"  
-        lay-filter="' . ($item['filter'] ?? '') . '">';
-        $item['value'] = (string)$item['value'];
-        if (!empty($item['data'])) {
-            foreach ($item['data'] as $k => $v) {
-                $v['id'] = (string)$v['id'];
-                $html .= '<option  data-type="' . (gettype($item['value'])) . '"  data-value="' . $item['value'] . '" value="' . $v['id'] . '" ' . ($v['id'] == $item['value'] ? 'selected' : '') . '>' . lang($v['name']) . '</option>';
-
-            }
-        }
-        $html .= '</select>';
-
-        return $html;
-    }
-
-    public function textarea($item, $hasLabel = 1, $class = "form-control")
-    {
-
-        $item['tips'] = $item['tips'] ?? '';
-        $item['id'] = $item['id'] ?? $item['field'];
-
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        $html .= '<textarea ' . ($item['attr'] ?? '') . '  rows="' . ($item['rows'] ?? '5') . '"   
-         name="' . $item['field'] . '"   
-        lay-verify="' . ($item['verify'] ?? '') . '" 
-        class="' . $class . ' ' . ($item['addClass'] ?? '') . '" 
-        id="input-' . ($item['id']) . '" 
-        placeholder="' . lang($item['tips'] ?: $item['name']) . '">' . $item['value'] . '</textarea>';
-        return $html;
-    }
-
-    public function radio($item, $hasLabel = 1, $inline = "1")
-    {
-
-        $item['tips'] = $item['tips'] ?? $item['name'];
-        $item['id'] = $item['id'] ?? $item['field'];
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-
-        $html .= '<div ' . ($item['attr'] ?? '') . ' class="radio-tips form-control radio-area " id="' . $item['id'] . '" data-tips="' . lang($item['tips']) . '">';
-        if (!empty($item['data'])) {
-            foreach ($item['data'] as $k => $v) {
-
-                $html .= '<div class="custom-control custom-radio ' . ($inline ? 'custom-control-inline' : '') . '">';
-                $html .= '<input data-value="' . $item['value'] . '"  ' . ($v['id'] == $item['value'] ? 'checked' : '') . '  value="' . $v['id'] . '" type="radio" id="' . ($item['field']) . $v['id'] . '" 
-                 lay-verify="' . ($item['verify'] ?? '') . '" 
-                 name="' . $item['field'] . '" class="custom-control-input">
-                  <label class="custom-control-label" for="' . ($item['field']) . $v['id'] . '">' . lang($v['name']) . '</label>
-                </div>';
-            }
-        }
-        $html .= '</div>';
-
-        return $html;
-    }
-
-    /**
-     *
-     * @param $item
-     * @param int $hasLabel
-     * @param string $inline
-     * @return string
-     */
-    public function checkbox($item, $hasLabel = 1, $inline = "1")
-    {
-        $item['id'] = $item['id'] ?? $item['field'];
-        $item['tips'] = $item['tips'] ?? $item['name'];
-        if (!is_array($item['value'])) {
-            $item['value'] = [];
-        }
-
-        $html = '';
-        if ($hasLabel) {
-            $html .= $this->label($item);
-        }
-        $html .= '<div><div ' . ($item['attr'] ?? '') . ' class="radio-tips form-control checkbox-area h-auto"  id="' . $item['id'] . '" data-tips="' . lang($item['tips']) . '">';
-        if (!empty($item['data'])) {
-            foreach ($item['data'] as $k => $v) {
-
-                $html .= '<div class="custom-control custom-checkbox ' . ($inline ? 'custom-control-inline' : '') . '">';
-                $html .= '<input  ' . ($item['attr'] ?? '') . '  
-                ' . (in_array($v['id'], $item['value']) ? 'checked' : '') . '
-                 value="' . $v['id'] . '" type="checkbox" id="' . ($item['field']) . $v['id'] . '" 
-                 lay-verify="' . ($item['verify'] ?? '') . '" 
-                 placeholder="' . lang($item['tips']) . '" 
-                 name="' . $item['field'] . '[]" class="custom-control-input" />
-                  <label class="custom-control-label" for="' . ($item['field']) . $v['id'] . '">' . lang($v['name']) . '</label>
-                </div>';
-            }
-        }
-        $html .= '</div></div>';
-
-        return $html;
-    }
 
     /**
      * 是否数组

@@ -9,7 +9,11 @@
     <div class="collapse fade show" id="collapseSearch">
         <div class="mt-3 mr-3 ml-3 mb-2 ">
             <div class="layui-form layui-form-pane form-inline">
-                {!! ($search_form_tpl??'') !!}
+                @foreach($search_form_tpl as $form_key=>$form_item)
+
+                    @include('admin.default.tpl.form.formSwitchTpl',['form_tpl_item'=>$form_item,'is_search'=>1])
+                @endforeach
+
                 <div class="form-group mb-2">
                     <button class="btn btn-success" type="button" lay-submit lay-filter="LAY-list-search"><i
                                 class="fa fa-search"></i> {{ lang('搜索') }}

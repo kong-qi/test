@@ -2,7 +2,7 @@
 @section('content')
 
     <form class="layui-form">
-        {!! $form_tpl !!}
+        @include('admin.default.tpl.form.form')
 
 
     </form>
@@ -12,4 +12,7 @@
     {{-- //监听页面是否有编辑器加载--}}
     @include('admin.default.tpl.listenEditorCreate')
 
+    @if(isset($footAddJavascript) && !empty($footAddJavascript))
+        @includeIf($footAddJavascript)
+    @endif
 @endsection

@@ -25,7 +25,7 @@
                             <td>{{ lang("当前版本") }}</td>
                             <td>
                                 {{ config('copyright.system_version') }}
-                                <a href="//{{ config('copyright.domain') }}" target="_blank"
+                                <a href="https://www.heibaiketang.com/note/cover/8.html" target="_blank"
                                    style="padding-left: 15px;">{{ lang("文档手册") }}</a>
                             </td>
                         </tr>

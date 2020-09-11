@@ -13,8 +13,8 @@ class AdminPermissionController extends BaseCurlController
 {
     public $pageName = '权限规则';
     //不共享curl页面,为空表示走自己模板
-    public $commonBladePath = '';
-
+    public $denyCommonBladePathActionName =['index'];
+    public $createEditfootAddJavascript='footJs';
 
     /**
      * 设置模型
@@ -190,7 +190,10 @@ class AdminPermissionController extends BaseCurlController
     {
         $roles = $this->getRole();// 获取所有角色
         $cate = $this->getPermission()->toArray();
-        $cate = tree($cate);
+        $cate=array_merge([['id'=>0,'cn_name'=>'根级','name'=>'','parent_id'=>0]],$cate);
+
+        $cate = tree($cate,'id','parent_id','children');
+
         return ['roles' => $roles, 'permissions' => $cate];
     }
 
@@ -199,7 +202,13 @@ class AdminPermissionController extends BaseCurlController
     {
 
         $data = [
-
+            [
+                'blade_name'=>'adminPermission.parent',
+                'type'=>'blade',
+                'name' => '上级',
+                'field'=>'parent_id',
+                'must'=>1
+            ],
             [
                 'field' => 'cn_name',
                 'type' => 'text',
@@ -251,6 +260,17 @@ class AdminPermissionController extends BaseCurlController
             ]
 
         ];
+
+        //如果是批量操作，需要追加是否需要批量操作
+        if($this->createFormCurrent=='batch'){
+            $data[]=[
+                'field' => 'batch_show',
+                'type' => 'radio',
+                'name' => '是否包含批量操作',
+                'default' => 0,
+                'data' => $this->uiService->trueFalseData()
+            ];
+        }
 
         //赋值到ui数组里面必须是`form`的key值
         $this->uiBlade['form'] = $data;

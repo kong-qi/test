@@ -2,11 +2,15 @@
 @section('content')
 
     <form class="layui-form ui-form">
-        {!! $form_tpl !!}
+        @include('admin.default.tpl.form.form')
     </form>
 
 @endsection
 @section('foot_js')
 
+    @include('admin.default.tpl.listenEditorCreate')
 
+    @if(isset($footAddJavascript) && !empty($footAddJavascript))
+        @includeIf($footAddJavascript)
+    @endif
 @endsection
