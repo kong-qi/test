@@ -46,7 +46,7 @@ trait ModelCurlTrait
             $this->shareData(['cols' => [$cols]]);
         }
 
-        $this->shareData(['index_list_tips' => $this->indexTips()]);
+        $this->shareData(['index_list_tips' => $this->indexTips(),'indexfootAddJavascript '=>$this->indexfootAddJavascript?$this->getOriginBladePath().$this->indexfootAddJavascript:'']);
         //将btn和搜索数据写入到变量里面
         $this->createBladeHtml();
         return $this->display($indexShareData ?: []);

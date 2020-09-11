@@ -24,7 +24,6 @@
                                 @include('admin.default.tpl.form.text',['form_item'=>$form_tpl_item])
                                 @break
                                 @case('select')
-
                                 @include('admin.default.tpl.form.select',['form_item'=>$form_tpl_item])
                                 @break
                                 @case('textarea')
