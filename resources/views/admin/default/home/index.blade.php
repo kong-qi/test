@@ -38,6 +38,9 @@
         <script>
             layui.extend({
                 admin: '/admin' //附加入库
+            }).use('cacheNav',function(){
+              var cacheNav=layui.cacheNav;
+              cacheNav.cacheName="admin_nav";//设置导航的缓存名称，如果多个后台应用，更改这个名称即可
             }).use('admin') //加载入口
 
 

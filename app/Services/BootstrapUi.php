@@ -433,6 +433,7 @@ class BootstrapUi implements Ui
         $item['value'] = $item['value'] ?? '';
 
         $item['data'] = $item['data'] ?? [];
+        $item['oss_type'] = $item['oss_type'] ?? 'local';//上传文件类型
 
         $item['upload_url'] = $item['upload_url'] ?? '';//单独设置上传接口地址
         $item['file_type'] = $item['file_type'] ?? '';//上传文件类型
@@ -452,6 +453,10 @@ class BootstrapUi implements Ui
         if ($item['group_id']) {
             $up_attr .= ' data-group_id=' . $item['group_id'] . ' ';
         }
+        if ($item['oss_type']) {
+            $up_attr .= ' data-oss_type=' . $item['oss_type'] . ' ';
+        }
+
 
         $place_attr = 'data-value_name=' . $item['value_name'];;
         if ($item['place_url']) {
@@ -463,6 +468,10 @@ class BootstrapUi implements Ui
         if ($item['group_id']) {
             $place_attr .= ' data-group_id=' . $item['group_id'] . ' ';
         }
+        if ($item['oss_type']) {
+            $place_attr .= ' data-oss_type=' . $item['oss_type'] . ' ';
+        }
+
 
         $html = '';
         if ($hasLabel) {
